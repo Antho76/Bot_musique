@@ -1,5 +1,14 @@
+// require/ nécesssitée
 const discord = require('discord.js');
 const fs = require('fs');
+const https = require('https-proxy-agent');
+const { SpotifyPlugin } = require('@distube/spotify');
+const { YtDlpPlugin } = require('@distube/yt-dlp');
+const { token } = require('./botconfig/config.json');
+const { DisTube } = require('distube');
+const filters = require(`./botconfig/filters.json`);
+
+// paramétrage constantes
 const client =new discord.Client({
     intents: [
         "Guilds",
@@ -8,13 +17,16 @@ const client =new discord.Client({
         "MessageContent"
     ]
 });
-const { SpotifyPlugin } = require("@distube/spotify");
-const { YtDlpPlugin } = require("@distube/yt-dlp");
-const { token } = require('./config.json');
-const { DisTube } = require("distube");
+const proxy = 'http://123.123.123.123:8080';
+const agent = https(proxy);
 
 client.commands = new discord.Collection();
 
+//paramétrage secondaire
+let spotifyoptions = {
+    parallel: true,
+    emitEventsAfterFetching: true,
+  }
 fs.readdir('./commands/', (err, files) => {
     if (err) console.log(err)
 
@@ -32,19 +44,15 @@ fs.readdir('./commands/', (err, files) => {
 });
 
 
-client.DisTube = new DisTube(client, {
-    searchSongs: 5,
-	searchCooldown: 30,
-	leaveOnEmpty: false,
-	leaveOnFinish: false,
-	leaveOnStop: false,
-    plugins: [new SpotifyPlugin()],
-    plugins: [new YtDlpPlugin({ update: true })],
-
-});
+client.distube = new DisTube(client, {
+    emitNewSongOnly: true,
+    leaveOnFinish: true,
+    emitAddSongWhenCreatingQueue: false, 
+    plugins: [new SpotifyPlugin()]
+})
 
 
-
+// début du  code BOT 
 client.on("ready", client => {
     console.log("Bot en ligne");
 });
@@ -63,9 +71,15 @@ client.on("messageCreate", message => {
     if (commandFile) commandFile.run(client, message, args);
 
 });
+/*
+DisTube.on('playSong', (queue, song) =>
+        queue.textChannel?.send(
+            `Playing \`${song.name}\` - \`${
+                song.formattedDuration
+            }\`\nRequested by: ${song.user}\n${status(queue)}`,
+        ),
+    )
+      
+*/
 
-client.DisTube.on("PlaySong", (queue, song) => {
-    queue.message.channel.send("Joue Acutuellement: " + song.name)
-})
-
-client.login(process.env.TOKEN);
+client.login(token);
