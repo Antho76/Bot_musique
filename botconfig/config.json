@@ -1,3 +1,11 @@
 {
-    "token": "MTA3MjE0MzYyODg2MTk3MjU2MA.GKZgm4.0oq1357JfhGYANk9l0j_eGlZ6RVx5_0qyNVzxY"
-}
+    "token": "MTA3MjE0MzYyODg2MTk3MjU2MA.GTERwh.p5EL9uFEk6cfy5Bl4F0LIT9yFgh1IumtxJ6voE",
+    "emoji": {
+        "play": "▶️",
+        "stop": "⏹️",
+        "queue": "📄",
+        "success": "☑️",
+        "repeat": "🔁",
+        "error": "❌"
+      }
+    }
